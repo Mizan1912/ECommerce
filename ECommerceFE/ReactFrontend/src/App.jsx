@@ -23,7 +23,9 @@ import { ProductsPage } from './features/products/ProductsPage'
 import { OrderDetailPage } from './features/orders/OrderDetailPage'
 import { OrdersPage } from './features/orders/OrdersPage'
 import './App.css'
-
+import  RegisterPage  from './features/auth/Register'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function AdminGate({ children }) {
   const { session } = useApp()
 
@@ -48,6 +50,7 @@ function AppRoutes() {
         <Route path="account" element={<AccountPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path='register' element={<RegisterPage/>}/>
         <Route path="reset-password" element={<ResetPasswordPage />} />
       </Route>
 
@@ -77,10 +80,20 @@ function AppRoutes() {
 
 function App() {
   return (
+    <>
     <AppProvider>
       <AppRoutes />
     </AppProvider>
+      <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+        />
+    </>
   )
+
 }
 
 export default App
