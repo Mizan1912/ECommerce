@@ -5,12 +5,56 @@ import { Card } from '../../components/ui/Card'
 import { Field } from '../../components/ui/Field'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { useApp } from '../../lib/appContext'
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
-  const { previewLogin, session, showApiNotice } = useApp()
+  const { previewLogin, session, showApiNotice} = useApp()
   const [searchParams] = useSearchParams()
   const next = searchParams.get('next')
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+   const navigate = useNavigate();
+   const handleChange = (event) => {
+    const { name, value } = event.target;
 
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+  const requestBody = {
+    email: formData.email,
+    password: formData.password
+  };
+
+  try {
+    const response = await axios.post(
+      "https://hfvf76kr-5000.inc1.devtunnels.ms/api/v1/auth/login",
+      requestBody
+    );
+
+    console.log(response.data);
+
+    const token = response.data.token;
+
+    // Store token as cookie
+    toast.success("login successful!");
+          setTimeout(() => {
+          navigate("/");
+        }, 1500);
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+  }
+};
   return (
     <section className="grid gap-6 lg:grid-cols-[1fr_420px]">
       <div className="flex flex-col justify-center rounded-lg bg-neutral-950 p-8 text-white">
@@ -23,14 +67,30 @@ export function LoginPage() {
       </div>
       <Card className="p-5">
         <PageHeader eyebrow="Login" title="Welcome back" />
-        <form className="mt-5 grid gap-4" onSubmit={(event) => event.preventDefault()}>
-          <Field label="Email" name="email" placeholder="customer@example.com" type="email" />
-          <Field label="Password" name="password" placeholder="Password" type="password" />
-          <Button onClick={() => showApiNotice('authApi.login')}>
-            <LockKeyhole size={18} />
-            Connect login API
-          </Button>
-        </form>
+      <form className="mt-5 grid gap-4" onSubmit={handleLogin}>
+      <Field
+        label="Email"
+        name="email"
+        placeholder="customer@example.com"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+      />
+
+      <Field
+        label="Password"
+        name="password"
+        placeholder="Password"
+        type="password"
+        value={formData.password}
+        onChange={handleChange}
+      />
+
+      <Button type="submit">
+        <LockKeyhole size={18} />
+        Login
+      </Button>
+    </form>
         <div className="mt-5 grid gap-3 border-t border-neutral-200 pt-5">
           <Button onClick={() => previewLogin('customer')} variant="secondary">
             <UserRound size={18} />
@@ -43,6 +103,9 @@ export function LoginPage() {
           {session ? <p className="text-sm text-neutral-500">Active preview session: {session.role}</p> : null}
           <Button to="/forgot-password" variant="ghost">
             Forgot password?
+          </Button>
+          <Button to="/register" variant="ghost">
+            Don't have an Account?/Register
           </Button>
         </div>
       </Card>
