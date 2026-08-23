@@ -6,9 +6,27 @@ const idempotencySchema = new mongoose.Schema({
         unique:true,
         required:true,
     },
-
+    requestHash:{
+        type:String,
+        required:true,
+    },
+    statusCode:{
+        type:Number,
+        required:true,
+    },
     response:{
         type:Object
+    },
+    state:{
+        type:String,
+        enum:["in-flight", "completed"],
+        default:"in-flight",
+        required:true,
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now,
+        expires:86400 // 24 hours in seconds
     }
 })
 

@@ -24,3 +24,9 @@ export const updateOrderStatusSchema =
         ]),
     }),
   });
+
+export const cancelOrderSchema = z.object({
+  params: z.object({
+    orderNumber: z.string(),
+  }),
+});

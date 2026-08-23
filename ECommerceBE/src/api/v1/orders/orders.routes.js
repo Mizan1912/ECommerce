@@ -10,10 +10,11 @@ import {
 
   getOrderDetailsController,
   updateOrderStatusController,
+  cancelOrderController,
 }
 from "./orders.controller.js";
 import requireRole from "../../../middlewares/role.middleware.js";
-import { updateOrderStatusSchema } from "./orders.validator.js";
+import { updateOrderStatusSchema, cancelOrderSchema } from "./orders.validator.js";
 
 const router =
   express.Router();
@@ -47,6 +48,18 @@ router.patch(
   ),
 
   updateOrderStatusController
+);
+
+router.post(
+  "/:orderNumber/cancel",
+
+  authMiddleware,
+
+  validate(
+    cancelOrderSchema
+  ),
+
+  cancelOrderController
 );
 
 export default router;

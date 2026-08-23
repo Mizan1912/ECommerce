@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
 import env from "./src/config/env.js"
+import { serveDocs, setupDocs } from "./src/config/swagger.js";
 
 import healthRoutes from "./src/api/v1/health/health.routes.js";
 
@@ -19,11 +20,12 @@ import cartRoutes from "./src/api/v1/cart/cart.routes.js"
 import checkoutRoutes from "./src/api/v1/checkout/checkout.routes.js"
 import orderRoutes from "./src/api/v1/orders/orders.routes.js"
 import paymentRoutes from "./src/api/v1/payments/payments.routes.js"
+import adminRoutes from "./src/api/v1/admin/admin.routes.js"
 const app = express();
 //step 3
 app.use(requestMiddleware);
 app.use(loggerMiddleware);
-app.use(globalRateLimiter);
+// app.use(globalRateLimiter);
 
 app.use(
   helmet({
@@ -31,24 +33,49 @@ app.use(
   })
 );
 
+const allowedOrigins = [env.CLIENT_URL].filter(Boolean);
+
 app.use(cors({
-    origin:env.CLIENT_URL,
-    credentials:true
-}))
+  origin: (origin, callback) => {
+    // In development or test, allow all origins
+    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
+      return callback(null, true);
+    }
+    
+    // Allow requests with no origin (like mobile apps, postman, curl)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const isAllowed = allowedOrigins.includes(origin) || origin.includes('devtunnels.ms');
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 app.use(cookieParser());
 
 app.use(express.json({
-    limit:"10kb",
+  limit: "10kb",
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString();
+  }
 }));
 
-app.use("/api/v1/health",healthRoutes)
+app.use("/docs", serveDocs, setupDocs);
+app.use("/api/v1/health", healthRoutes)
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/products",productRoutes)
-app.use("/api/v1/cart",cartRoutes)
-app.use("/api/v1/checkout",checkoutRoutes)
-app.use("/api/v1/orders",orderRoutes)
-app.use("/api/v1/payments",paymentRoutes)
+app.use("/api/v1/products", productRoutes)
+app.use("/api/v1/cart", cartRoutes)
+app.use("/api/v1/checkout", checkoutRoutes)
+app.use("/api/v1/orders", orderRoutes)
+app.use("/api/v1/payments", paymentRoutes)
+app.use("/api/v1/admin", adminRoutes);
 
 app.use(notFoundMiddleware);
 

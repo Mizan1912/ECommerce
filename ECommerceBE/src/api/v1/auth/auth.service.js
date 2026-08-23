@@ -24,7 +24,7 @@ export const registerUser = async (payload) => {
     if (existingUser) {
         throw new ApiError(
             409,
-            "User already exists"
+            "User with this email already exists"
         );
         
     } 

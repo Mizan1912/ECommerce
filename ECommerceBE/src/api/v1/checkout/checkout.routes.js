@@ -6,6 +6,9 @@ from "../../../middlewares/auth.middleware.js";
 import validate
 from "../../../middlewares/validation.middleware.js";
 
+import idempotencyMiddleware
+from "../../../middlewares/idempotency.middleware.js";
+
 import {
   checkoutSchema,
 } from "./checkout.validator.js";
@@ -20,6 +23,8 @@ router.post(
   "/",
 
   authMiddleware,
+
+  idempotencyMiddleware,
 
   // validate(
   //   checkoutSchema

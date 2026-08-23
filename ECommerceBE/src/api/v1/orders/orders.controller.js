@@ -1,5 +1,5 @@
 import asyncHandler from "../../../utils/asyncHandler.js";
-import { getMyOrders, getOrderDetails, updateOrderStatus } from "./orders.service.js";
+import { getMyOrders, getOrderDetails, updateOrderStatus, cancelOrder } from "./orders.service.js";
 
 export const getMyOrdersController = asyncHandler(
      async (req,res) => {
@@ -49,3 +49,21 @@ export const updateOrderStatusController =
       });
     }
   );
+
+export const cancelOrderController = asyncHandler(
+     async (req, res) => {
+          const order = await cancelOrder(
+               req.user.userId,
+               req.user.role,
+               req.validatedData.params.orderNumber
+          );
+
+          res.status(200).json({
+               success: true,
+               message: "Order cancelled successfully",
+               data: {
+                    order
+               }
+          });
+     }
+);
