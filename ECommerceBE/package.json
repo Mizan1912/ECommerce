@@ -33,7 +33,10 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit",
+    "seed:admin": "node src/scripts/seedAdmin.js",
+    "seed:demo": "node src/scripts/seedDemoData.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

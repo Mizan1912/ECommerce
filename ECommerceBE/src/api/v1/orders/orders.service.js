@@ -4,7 +4,7 @@ import ApiError from "../../../utils/ApiError.js"
 import mongoose from "mongoose";
 import { getTransactionSession } from "../../../utils/db.utils.js";
 
-const ALLOWED_TRANSITIONS = {
+export const ALLOWED_TRANSITIONS = {
   pending: [
     "paid",
     "cancelled",
