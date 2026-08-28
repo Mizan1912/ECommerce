@@ -150,8 +150,8 @@ export function AdminProductEditorPage({ mode }) {
   useEffect(() => {
     if (!isEdit) return
 
+    // `loading` already starts true for edit mode, so no sync setState here.
     let active = true
-    setLoading(true)
     adminApi
       .getProduct(id)
       .then((response) => {
