@@ -1,100 +1,112 @@
-# Admin Module — Setup & Reference
+# Admin Panel — Setup and Feature Guide
 
-End-to-end admin console: Express/MongoDB API (`ECommerceBE`) + React admin UI (`ECommerceFE/ReactFrontend`).
+The admin area is complete front to back: a role-gated React console at `/admin` talking to
+role-gated `/api/v1/admin/*` endpoints on the Express API.
 
 ## Credentials
 
-Seeded by `npm run seed:admin` (values come from `ADMIN_*` in `ECommerceBE/.env`):
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@ecommerce.local` | `Admin@12345` |
+| Demo customer | `customer@ecommerce.local` | `Customer@12345` |
 
-| Role     | Email                     | Password        |
-| -------- | ------------------------- | --------------- |
-| Admin    | `admin@ecommerce.local`   | `Admin@12345`   |
-| Customer | `customer@ecommerce.local`| `Customer@12345`|
+The admin account is created by `npm run seed:admin` and can be overridden with `ADMIN_NAME`,
+`ADMIN_EMAIL`, and `ADMIN_PASSWORD` in `ECommerceBE/.env`. Re-running the seed is safe: it promotes
+an existing account with that email to admin, reactivates it, and resets the password.
 
-The customer account and sample catalogue/orders come from `npm run seed:demo`.
-Change `ADMIN_PASSWORD` in `.env` and re-run `npm run seed:admin` to rotate the password.
+> Change the password before deploying anywhere public, and replace the dev JWT secrets in `.env`.
 
-## Running locally
+## Running it
 
 ```bash
-# API — http://localhost:5000
+# 1. API  (http://localhost:5000)
 cd ECommerceBE
 npm install
-npm run seed:admin     # creates/repairs the admin account
-npm run seed:demo      # optional: demo products, customer, orders, payments
-npm start              # or: npm run dev
+npm run seed:admin     # creates the admin account
+npm run seed:demo      # optional: 5 products, a customer, 3 orders, 3 payments
+npm start
 
-# Admin UI — http://localhost:5173/admin
+# 2. Web  (http://localhost:5173)
 cd ECommerceFE/ReactFrontend
 npm install
 npm run dev
 ```
 
-`ECommerceBE/.env` is pre-filled for local development (Mongo at `mongodb://127.0.0.1:27017/ecommerce`).
-Cloudinary and Razorpay keys are placeholders — image uploads need real `CLOUDINARY_*` values.
+Then open <http://localhost:5173/login>, sign in with the admin credentials, and the app routes you
+straight to `/admin`. API docs live at <http://localhost:5000/docs> (Admin tag).
 
-`ECommerceFE/ReactFrontend/.env` sets `VITE_API_BASE_URL=http://localhost:5000/api/v1`.
+Environment files:
 
-Log in at `/login`; an admin is redirected to `/admin`, a customer to the storefront.
+- `ECommerceBE/.env` — MongoDB URI, JWT secrets, mail, Razorpay, Cloudinary, admin seed values.
+- `ECommerceFE/ReactFrontend/.env` — `VITE_API_BASE_URL` (defaults to `http://localhost:5000/api/v1`).
+
+Image uploads are the one feature that needs third-party credentials: fill in `CLOUDINARY_CLOUD_NAME`,
+`CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` before uploading. Everything else runs on a local
+MongoDB with no external accounts.
+
+## What the panel does
+
+| Screen | Capabilities |
+| --- | --- |
+| **Dashboard** `/admin` | Paid revenue (total, 30 day, average order), order counts by state, product and user totals, 30-day revenue bars, low-stock list, best sellers, recent orders, payment status tiles |
+| **Products** `/admin/products` | Search and filter by category, status, and stock health; paginated; activate/deactivate; permanent delete (blocked when the product appears in orders) |
+| **Product editor** `/admin/products/new`, `/:id/edit` | Create and update with client-side validation matching the API schema; visibility toggle; upload/delete images and pick the primary one |
+| **Inventory** `/admin/inventory` | ±1 steppers and exact-count save per product, low/out-of-stock filters, health badges |
+| **Orders** `/admin/orders` | Filter by order and payment status, search by order number, inline "move to…" limited to legal transitions |
+| **Order detail** `/admin/orders/:orderNumber` | Line items, totals, payment attempts, customer info, and the allowed next states as buttons |
+| **Users** `/admin/users` | Search and filter by role/status, edit name and role, activate/deactivate, delete users without orders, per-user order count and lifetime spend |
+| **Uploads** `/admin/uploads` | Media library across products: multi-file upload, delete, set primary |
+| **Payments** `/admin/payments` | Razorpay ledger with provider references, status filters, links back to orders |
 
 ## Admin API
 
-All routes are under `/api/v1/admin`, require `Authorization: Bearer <accessToken>`, and are gated on `role === "admin"`
-(401 without a token, 403 for customers). Responses use the standard envelope
-`{ success, message?, data, meta? }`, with `meta.pagination = { total, page, limit, totalPages }` on list routes.
-
-| Method | Path | Purpose |
-| ------ | ---- | ------- |
-| GET | `/stats` | Dashboard: revenue, order/status counts, low stock, 30-day trend, best sellers, recent orders |
-| GET | `/users` | List users — `q`, `role`, `isActive`, `page`, `limit`, `sort` |
-| GET | `/users/:id` | Single user plus order count and lifetime spend |
-| PATCH | `/users/:id` | Update `name`, `role`, `isActive` |
-| DELETE | `/users/:id` | Delete a user with no orders |
-| GET | `/orders` | List orders — `q` (order number), `status`, `paymentStatus`, `page`, `limit` |
-| GET | `/orders/:id` | Order (by id or order number) with payments and `allowedTransitions` |
-| PATCH | `/orders/:id/status` | Move order through the state machine |
-| GET | `/products` | Catalogue incl. inactive — `q`, `category`, `status`, `stock`, `page`, `limit`; `meta.categories` |
-| POST | `/products` | Create product |
-| GET | `/products/:id` | Single product |
-| PATCH | `/products/:id` | Update product fields |
-| DELETE | `/products/:id` | Deactivate; `?hard=true` deletes permanently (blocked if ordered) |
-| PATCH | `/products/:id/stock` | `{ delta }` relative or `{ stock }` absolute |
-| POST | `/products/:id/images` | Multipart `images` (≤5 files, 2MB, JPEG/PNG/WEBP) → Cloudinary |
-| DELETE | `/products/:id/images/:imageId` | Remove image (promotes another to primary) |
-| PATCH | `/products/:id/images/:imageId/primary` | Set primary image |
-| GET | `/payments` | Payment ledger — `q`, `status`, `provider`, `page`, `limit` |
-
-### Order state machine
+All routes require `Authorization: Bearer <accessToken>` from `POST /api/v1/auth/login` **and** the
+`admin` role; anything else gets 401/403.
 
 ```
-pending  → paid, cancelled
-paid     → processing, refunded
-processing → shipped
-shipped  → delivered
-delivered / cancelled / refunded → (final)
+GET    /api/v1/admin/stats
+
+GET    /api/v1/admin/users                        ?q= &role= &isActive= &page= &limit=
+GET    /api/v1/admin/users/:id                    user + orderCount + totalSpent
+PATCH  /api/v1/admin/users/:id                    { name?, role?, isActive? }
+DELETE /api/v1/admin/users/:id
+
+GET    /api/v1/admin/orders                       ?q= &status= &paymentStatus= &page= &limit=
+GET    /api/v1/admin/orders/:idOrNumber           order + payments + allowedTransitions
+PATCH  /api/v1/admin/orders/:idOrNumber/status    { status }
+
+GET    /api/v1/admin/products                     ?q= &category= &status= &stock= &page= &limit=
+POST   /api/v1/admin/products                     { title, description, category, price, stock, isActive? }
+GET    /api/v1/admin/products/:id
+PATCH  /api/v1/admin/products/:id
+DELETE /api/v1/admin/products/:id                 ?hard=true for permanent delete
+PATCH  /api/v1/admin/products/:id/stock           { delta } or { stock }
+
+POST   /api/v1/admin/products/:id/images          multipart, field "images", max 5 × 2MB
+DELETE /api/v1/admin/products/:id/images/:imageId
+PATCH  /api/v1/admin/products/:id/images/:imageId/primary
+
+GET    /api/v1/admin/payments                     ?q= &status= &provider= &page= &limit=
 ```
 
-Cancelling restores stock. Moving to `paid` stamps `paidAt`; moving to `refunded` marks related payments refunded.
+Responses follow the existing envelope: `{ success, message?, data, meta? }`, with
+`meta.pagination = { total, page, limit, totalPages }` on list endpoints.
 
-### Guard rails
+## Rules the backend enforces
 
-- The last active admin cannot be demoted, deactivated, or deleted.
-- Admins cannot change their own role, deactivate themselves, or delete their own account.
-- Users with orders and products that appear in orders can only be deactivated, never hard-deleted.
-- Deactivated users (`isActive: false`) are rejected at login with 403.
+- **Order transitions** follow the state machine: `pending → paid | cancelled`, `paid → processing |
+  refunded`, `processing → shipped`, `shipped → delivered`. Anything else is a 400. Cancelling
+  restores stock in a transaction; refunding also marks paid payments refunded.
+- **Stock** can never go negative, whether set by delta or absolute value.
+- **Admin safety**: you cannot change your own role, deactivate or delete your own account, and the
+  last active admin cannot be demoted or deactivated.
+- **Deletion**: users with orders and products that appear in orders cannot be deleted — deactivate
+  them instead. Hard-deleting a product also removes its Cloudinary images.
+- **Deactivated users** (`isActive: false`) are refused at login with a 403.
+- **Uploads** are checked by MIME type *and* magic-byte signature before reaching Cloudinary.
 
-## Admin UI
+## Notable schema changes
 
-| Route | Screen |
-| ----- | ------ |
-| `/admin` | Dashboard — KPIs, 30-day revenue trend, low stock, recent orders, best sellers |
-| `/admin/products` | Catalogue with search/filters, activate–deactivate, delete |
-| `/admin/products/new`, `/admin/products/:id/edit` | Product editor with validation and image manager |
-| `/admin/inventory` | ±1 and exact-count stock adjustments, low/out-of-stock filters |
-| `/admin/orders` | Order list with filters and inline status transitions |
-| `/admin/orders/:id` | Order detail: items, payments, customer, allowed transitions |
-| `/admin/users` | User list, edit modal (name/role/status), deactivate, delete |
-| `/admin/uploads` | Media library — upload, delete, set primary image |
-| `/admin/payments` | Razorpay payment ledger (read-only) |
-
-Sessions persist the JWT in `localStorage`; a 401 clears it and the admin routes redirect back to `/login?next=…`.
+- `User.isActive` (boolean, default `true`) — drives deactivation and the login block.
+- `Product.images[].isPrimary` (boolean, default `false`) — one primary image per product; deleting
+  the primary promotes the next image.
