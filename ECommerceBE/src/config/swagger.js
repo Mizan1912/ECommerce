@@ -116,6 +116,56 @@ const options = {
           }
         }
       },
+      "/api/v1/auth/logout": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "User Logout",
+          "responses": {
+            "200": {
+              "description": "Logged out successfully"
+            }
+          }
+        }
+      },
+      "/api/v1/auth/refresh": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Refresh Access Token",
+          "responses": {
+            "200": {
+              "description": "Access token refreshed"
+            },
+            "401": {
+              "description": "Invalid or expired refresh token"
+            }
+          }
+        }
+      },
+      "/api/v1/auth/forgot-password": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Request password reset email",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["email"],
+                  "properties": {
+                    "email": { "type": "string", "example": "john.doe@example.com" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "If account exists, reset mail sent"
+            }
+          }
+        }
+      },
       "/api/v1/products": {
         "get": {
           "tags": ["Products"],
@@ -124,6 +174,24 @@ const options = {
             "200": {
               "description": "Products retrieved successfully"
             }
+          }
+        }
+      },
+      "/api/v1/products/{slug}": {
+        "get": {
+          "tags": ["Products"],
+          "summary": "Get a product by slug",
+          "parameters": [
+            {
+              "name": "slug",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "Product detail" },
+            "404": { "description": "Product not found" }
           }
         }
       },
@@ -158,6 +226,62 @@ const options = {
           "responses": {
             "200": { "description": "Item added successfully" }
           }
+        },
+        "delete": {
+          "tags": ["Cart"],
+          "summary": "Clear user cart",
+          "security": [{ "bearerAuth": [] }],
+          "responses": {
+            "200": { "description": "Cart cleared successfully" }
+          }
+        }
+      },
+      "/api/v1/cart/{productId}": {
+        "patch": {
+          "tags": ["Cart"],
+          "summary": "Update item quantity in cart",
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "productId",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["quantity"],
+                  "properties": {
+                    "quantity": { "type": "integer", "example": 2 }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": { "description": "Cart updated successfully" }
+          }
+        },
+        "delete": {
+          "tags": ["Cart"],
+          "summary": "Remove item from cart",
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "productId",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "Item removed successfully" }
+          }
         }
       },
       "/api/v1/checkout": {
@@ -179,6 +303,35 @@ const options = {
           }
         }
       },
+      "/api/v1/orders": {
+        "get": {
+          "tags": ["Orders"],
+          "summary": "Get customer's orders list",
+          "security": [{ "bearerAuth": [] }],
+          "responses": {
+            "200": { "description": "Orders list" }
+          }
+        }
+      },
+      "/api/v1/orders/{orderNumber}": {
+        "get": {
+          "tags": ["Orders"],
+          "summary": "Get order details",
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "orderNumber",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "Order details" },
+            "404": { "description": "Order not found" }
+          }
+        }
+      },
       "/api/v1/orders/{orderNumber}/cancel": {
         "post": {
           "tags": ["Orders"],
@@ -194,6 +347,33 @@ const options = {
           ],
           "responses": {
             "200": { "description": "Order cancelled successfully" }
+          }
+        }
+      },
+      "/api/v1/payments/{orderNumber}": {
+        "post": {
+          "tags": ["Payments"],
+          "summary": "Initiate Razorpay payment transaction",
+          "security": [{ "bearerAuth": [] }],
+          "parameters": [
+            {
+              "name": "orderNumber",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "Payment transaction initiated successfully" }
+          }
+        }
+      },
+      "/api/v1/payments/webhook": {
+        "post": {
+          "tags": ["Payments"],
+          "summary": "Razorpay payment webhook",
+          "responses": {
+            "200": { "description": "Webhook processed successfully" }
           }
         }
       },

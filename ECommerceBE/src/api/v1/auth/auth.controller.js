@@ -102,7 +102,7 @@ export const logout = asyncHandler(
   async (req,res) => {
     const refreshToken = req.cookies.refreshToken;
 
-    await logout(refreshToken);
+    await logoutUser(refreshToken);
 
     res.clearCookie(
       "refreshToken"

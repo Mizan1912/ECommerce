@@ -36,6 +36,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "seed:demo": "node src/scripts/seedDemoData.js",
+    "seed:json": "node src/scripts/seedFromJson.js",
     "dev": "nodemon index.js"
   },
   "keywords": [],

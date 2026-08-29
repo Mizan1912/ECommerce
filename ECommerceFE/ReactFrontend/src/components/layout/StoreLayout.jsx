@@ -50,6 +50,11 @@ export function StoreLayout() {
                 </span>
               ) : null}
             </Button>
+            {session?.role === 'admin' && (
+              <Button className="px-3 bg-emerald-700 hover:bg-emerald-600 text-white" to="/admin">
+                Admin Panel
+              </Button>
+            )}
             <Button className="px-3" to={session ? '/account' : '/login'} variant="secondary">
               <User size={18} />
               <span className="hidden sm:inline">{session ? session.name : 'Login'}</span>

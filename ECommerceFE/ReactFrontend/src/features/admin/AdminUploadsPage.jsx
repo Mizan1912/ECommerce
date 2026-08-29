@@ -44,14 +44,14 @@ export function AdminUploadsPage() {
     setQuery(search.trim())
   }
 
-  const upload = async (event) => {
-    const files = event.target.files
+  const [isDragActive, setIsDragActive] = useState(false)
+
+  const uploadFiles = async (files) => {
     if (!selectedId) {
       toast.error('Choose a product first.')
-      event.target.value = ''
       return
     }
-    if (!files?.length) return
+    if (!files || files.length === 0) return
 
     setUploading(true)
     try {
@@ -62,7 +62,65 @@ export function AdminUploadsPage() {
       toast.error(requestError.message)
     } finally {
       setUploading(false)
-      event.target.value = ''
+    }
+  }
+
+  const upload = (event) => {
+    const files = event.target.files
+    if (files?.length) {
+      uploadFiles(Array.from(files))
+    }
+    event.target.value = ''
+  }
+
+  const handleDrag = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (!selectedId) return
+
+    if (event.type === 'dragenter' || event.type === 'dragover') {
+      setIsDragActive(true)
+    } else if (event.type === 'dragleave') {
+      setIsDragActive(false)
+    }
+  }
+
+  const handleDrop = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDragActive(false)
+
+    if (!selectedId) {
+      toast.error('Choose a product first.')
+      return
+    }
+
+    const files = event.dataTransfer?.files
+    if (files?.length) {
+      uploadFiles(Array.from(files))
+    }
+  }
+
+  const handlePaste = (event) => {
+    if (!selectedId) {
+      toast.error('Choose a product first.')
+      return
+    }
+
+    const items = event.clipboardData?.items
+    if (!items) return
+
+    const files = []
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile()
+        if (file) files.push(file)
+      }
+    }
+
+    if (files.length > 0) {
+      event.preventDefault()
+      uploadFiles(files)
     }
   }
 
@@ -103,8 +161,24 @@ export function AdminUploadsPage() {
             ]}
             value={selectedId}
           />
-          <label className="grid min-h-40 cursor-pointer place-items-center rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-4 text-center text-sm text-neutral-500 hover:border-neutral-400">
+          <div
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onPaste={handlePaste}
+            tabIndex={0}
+            className={`grid min-h-40 cursor-pointer place-items-center rounded-lg border border-dashed p-4 text-center text-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+              !selectedId
+                ? 'border-neutral-200 bg-neutral-100/50 text-neutral-400 cursor-not-allowed'
+                : isDragActive
+                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                : 'border-neutral-300 bg-neutral-50 text-neutral-500 hover:border-neutral-400'
+            }`}
+            onClick={() => selectedId && document.getElementById('uploads-file-input').click()}
+          >
             <input
+              id="uploads-file-input"
               accept="image/jpeg,image/png,image/webp"
               className="sr-only"
               disabled={uploading || !selectedId}
@@ -114,10 +188,16 @@ export function AdminUploadsPage() {
             />
             <span className="flex flex-col items-center gap-2">
               <ImagePlus size={22} />
-              {uploading ? 'Uploading…' : 'Click to choose images'}
-              <span className="text-xs">JPEG, PNG, WEBP · max 2MB each · up to 5 files</span>
+              {uploading
+                ? 'Uploading…'
+                : !selectedId
+                ? 'Choose a product first'
+                : 'Drag & drop, paste, or click to choose images'}
+              <span className="text-xs">
+                {selectedId ? 'JPEG, PNG, WEBP · max 2MB each · Ctrl+V to paste' : 'Select a product from the dropdown above'}
+              </span>
             </span>
-          </label>
+          </div>
           <p className="text-xs text-neutral-500">
             Files are streamed to Cloudinary by the backend. Configure CLOUDINARY_* in the API .env before uploading.
           </p>

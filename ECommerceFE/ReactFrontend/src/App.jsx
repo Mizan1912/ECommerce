@@ -15,6 +15,7 @@ import { AdminUploadsPage } from './features/admin/AdminUploadsPage'
 import { AdminUsersPage } from './features/admin/AdminUsersPage'
 import { ForgotPasswordPage } from './features/auth/ForgotPasswordPage'
 import { LoginPage } from './features/auth/LoginPage'
+import { AdminLoginPage } from './features/auth/AdminLoginPage'
 import { ResetPasswordPage } from './features/auth/ResetPasswordPage'
 import { CartPage } from './features/cart/CartPage'
 import { CheckoutPage } from './features/cart/CheckoutPage'
@@ -34,7 +35,7 @@ function AdminGate({ children }) {
 
   // Preview sessions carry no access token, so they cannot reach the admin API.
   if (session?.role !== 'admin' || session?.isPreview) {
-    return <Navigate replace to={`/login?next=${encodeURIComponent(location.pathname)}`} />
+    return <Navigate replace to={`/admin-login?next=${encodeURIComponent(location.pathname)}`} />
   }
 
   return children
@@ -53,6 +54,7 @@ function AppRoutes() {
         <Route path="orders/:id" element={<OrderDetailPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="admin-login" element={<AdminLoginPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path='register' element={<RegisterPage/>}/>
         <Route path="reset-password" element={<ResetPasswordPage />} />

@@ -52,6 +52,81 @@ http.interceptors.request.use((config) => {
   return config
 })
 
+let isRefreshing = false
+let failedQueue = []
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve(token)
+    }
+  })
+  failedQueue = []
+}
+
+http.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  async (error) => {
+    const originalRequest = error.config
+    const status = error.response?.status
+
+    if (status === 401 && !originalRequest._retry) {
+      if (
+        originalRequest.url?.includes('/auth/login') ||
+        originalRequest.url?.includes('/auth/refresh')
+      ) {
+        clearStoredSession()
+        return Promise.reject(toApiError(error))
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            return http(originalRequest)
+          })
+          .catch((err) => {
+            return Promise.reject(err)
+          })
+      }
+
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const refreshResponse = await http.post('/auth/refresh')
+        const newAccessToken = refreshResponse?.data?.data?.accessToken || refreshResponse?.data?.accessToken
+
+        if (!newAccessToken) {
+          throw new Error('Refresh token request failed to return an access token')
+        }
+
+        setStoredSession(newAccessToken, getStoredUser())
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        processQueue(null, newAccessToken)
+
+        return http(originalRequest)
+      } catch (refreshError) {
+        processQueue(refreshError, null)
+        clearStoredSession()
+        window.location.href = `/admin-login?next=${encodeURIComponent(window.location.pathname)}`
+        return Promise.reject(toApiError(refreshError))
+      } finally {
+        isRefreshing = false
+      }
+    }
+
+    return Promise.reject(toApiError(error))
+  }
+)
+
 /** Normalised error thrown by every api helper. */
 export class ApiError extends Error {
   constructor(message, { status, details } = {}) {
@@ -63,6 +138,7 @@ export class ApiError extends Error {
 }
 
 function toApiError(error) {
+  if (error instanceof ApiError) return error
   const status = error.response?.status
   const payload = error.response?.data
   const details = payload?.errors ?? []
