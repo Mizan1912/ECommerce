@@ -33,7 +33,9 @@ app.use(
   })
 );
 
-const allowedOrigins = [env.CLIENT_URL].filter(Boolean);
+const allowedOrigins = env.CLIENT_URL
+  ? env.CLIENT_URL.split(',').map(url => url.trim().replace(/\/$/, ''))
+  : [];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -47,7 +49,12 @@ app.use(cors({
       return callback(null, true);
     }
 
-    const isAllowed = allowedOrigins.includes(origin) || origin.includes('devtunnels.ms');
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const isAllowed = 
+      allowedOrigins.includes(cleanOrigin) || 
+      cleanOrigin.includes('devtunnels.ms') ||
+      cleanOrigin.startsWith('http://localhost:') || 
+      cleanOrigin.startsWith('http://127.0.0.1:');
 
     if (isAllowed) {
       callback(null, true);
