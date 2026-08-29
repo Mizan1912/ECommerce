@@ -50,7 +50,7 @@ app.use(cors({
     }
 
     const cleanOrigin = origin.replace(/\/$/, '');
-    const localIpRegex = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/;
+    const localIpRegex = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|[a-zA-Z0-9-]+\.local)(:\d+)?$/;
     
     const isAllowed = 
       allowedOrigins.includes(cleanOrigin) || 
