@@ -5,39 +5,91 @@ import validate from '../../../middlewares/validation.middleware.js';
 import upload, { validateImageSignature } from '../../../middlewares/upload.middleware.js';
 
 import {
+    getStatsController,
     listUsersController,
+    getUserController,
     updateUserController,
+    deleteUserController,
     listOrdersController,
+    getOrderController,
     updateOrderStatusController,
+    listProductsController,
+    getProductController,
+    createProductController,
+    updateProductController,
+    deleteProductController,
     adjustProductStockController,
     uploadProductImagesController,
-    deleteProductImageController
+    deleteProductImageController,
+    setPrimaryProductImageController,
+    listPaymentsController,
 } from './admin.controller.js';
 
 import {
+    listUsersSchema,
+    getUserSchema,
     updateUserSchema,
-    adjustProductStockSchema
+    deleteUserSchema,
+    listOrdersSchema,
+    getOrderSchema,
+    adminUpdateOrderStatusSchema,
+    listProductsSchema,
+    getProductSchema,
+    createProductSchema,
+    updateProductSchema,
+    deleteProductSchema,
+    adjustProductStockSchema,
+    productImagesSchema,
+    productImageSchema,
+    listPaymentsSchema,
 } from './admin.validator.js';
-
-import { updateOrderStatusSchema } from '../orders/orders.validator.js';
 
 const router = express.Router();
 
-// All routes here require the user to be authenticated and have the 'admin' role
+// Every admin route requires an authenticated user holding the 'admin' role.
 router.use(authMiddleware);
 router.use(requireRole('admin'));
 
-// Admin User Management
-router.get('/users', listUsersController);
+// Dashboard
+router.get('/stats', getStatsController);
+
+// Users
+router.get('/users', validate(listUsersSchema), listUsersController);
+router.get('/users/:id', validate(getUserSchema), getUserController);
 router.patch('/users/:id', validate(updateUserSchema), updateUserController);
+router.delete('/users/:id', validate(deleteUserSchema), deleteUserController);
 
-// Admin Order Management
-router.get('/orders', listOrdersController);
-router.patch('/orders/:id/status', validate(updateOrderStatusSchema), updateOrderStatusController);
+// Orders
+router.get('/orders', validate(listOrdersSchema), listOrdersController);
+router.get('/orders/:id', validate(getOrderSchema), getOrderController);
+router.patch('/orders/:id/status', validate(adminUpdateOrderStatusSchema), updateOrderStatusController);
 
-// Admin Product Stock & Image Management
+// Products
+router.get('/products', validate(listProductsSchema), listProductsController);
+router.post('/products', validate(createProductSchema), createProductController);
+router.get('/products/:id', validate(getProductSchema), getProductController);
+router.patch('/products/:id', validate(updateProductSchema), updateProductController);
+router.delete('/products/:id', validate(deleteProductSchema), deleteProductController);
+
+// Inventory
 router.patch('/products/:id/stock', validate(adjustProductStockSchema), adjustProductStockController);
-router.post('/products/:id/images', upload.array('images', 5), validateImageSignature, uploadProductImagesController);
-router.delete('/products/:id/images/:imageId', deleteProductImageController);
+
+// Product images
+router.post(
+    '/products/:id/images',
+    upload.array('images', 5),
+    validateImageSignature,
+    validate(productImagesSchema),
+    uploadProductImagesController
+);
+router.delete('/products/:id/images/:imageId', validate(productImageSchema), deleteProductImageController);
+router.patch(
+    '/products/:id/images/:imageId/primary',
+    validate(productImageSchema),
+    setPrimaryProductImageController
+);
+
+// Payments
+router.get('/payments', validate(listPaymentsSchema), listPaymentsController);
 
 export default router;

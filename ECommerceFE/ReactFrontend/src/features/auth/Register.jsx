@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import { authApi } from "../../lib/api/client";
 import { UserPlus, User, ShieldCheck } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/ui/Field";
@@ -40,33 +40,20 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await axios.post(
-        "https://hfvf76kr-5000.inc1.devtunnels.ms/api/v1/auth/register",
-        {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          location: formData.location,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log("Registration successful:", response.data);
+      await authApi.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        location: formData.location,
+      });
 
       toast.success("Registration successful!");
       setTimeout(() => {
-      navigate("/login");
-    }, 1500);
-
+        navigate("/login");
+      }, 1500);
     } catch (error) {
-      if (error.response?.status === 409) {
-         setError(
-          error.response?.data?.message ||
-          "Couldn't create your account."
-        );
-      }
+      setError(error.message || "Couldn't create your account.");
+      toast.error(error.message || "Couldn't create your account.");
     }
   }; // <-- CLOSES handleRegister
 
