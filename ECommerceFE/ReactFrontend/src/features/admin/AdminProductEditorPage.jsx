@@ -39,10 +39,10 @@ function validate(form) {
 
 function ImageManager({ onChange, product }) {
   const [uploading, setUploading] = useState(false)
+  const [isDragActive, setIsDragActive] = useState(false)
 
-  const upload = async (event) => {
-    const files = event.target.files
-    if (!files?.length) return
+  const uploadFiles = async (files) => {
+    if (!files || files.length === 0) return
 
     setUploading(true)
     try {
@@ -53,7 +53,53 @@ function ImageManager({ onChange, product }) {
       toast.error(error.message)
     } finally {
       setUploading(false)
-      event.target.value = ''
+    }
+  }
+
+  const upload = (event) => {
+    const files = event.target.files
+    if (files?.length) {
+      uploadFiles(Array.from(files))
+    }
+    event.target.value = ''
+  }
+
+  const handleDrag = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (event.type === 'dragenter' || event.type === 'dragover') {
+      setIsDragActive(true)
+    } else if (event.type === 'dragleave') {
+      setIsDragActive(false)
+    }
+  }
+
+  const handleDrop = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    setIsDragActive(false)
+
+    const files = event.dataTransfer?.files
+    if (files?.length) {
+      uploadFiles(Array.from(files))
+    }
+  }
+
+  const handlePaste = (event) => {
+    const items = event.clipboardData?.items
+    if (!items) return
+
+    const files = []
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile()
+        if (file) files.push(file)
+      }
+    }
+
+    if (files.length > 0) {
+      event.preventDefault()
+      uploadFiles(files)
     }
   }
 
@@ -84,8 +130,22 @@ function ImageManager({ onChange, product }) {
         JPEG, PNG, or WEBP up to 2MB each, 5 files per upload. Images are stored on Cloudinary.
       </p>
 
-      <label className="mt-4 grid min-h-32 cursor-pointer place-items-center rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-4 text-center text-sm text-neutral-500 hover:border-neutral-400">
+      <div
+        onDragEnter={handleDrag}
+        onDragOver={handleDrag}
+        onDragLeave={handleDrag}
+        onDrop={handleDrop}
+        onPaste={handlePaste}
+        tabIndex={0}
+        className={`mt-4 grid min-h-32 cursor-pointer place-items-center rounded-lg border border-dashed p-4 text-center text-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+          isDragActive
+            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+            : 'border-neutral-300 bg-neutral-50 text-neutral-500 hover:border-neutral-400'
+        }`}
+        onClick={() => document.getElementById('image-file-input').click()}
+      >
         <input
+          id="image-file-input"
           accept="image/jpeg,image/png,image/webp"
           className="sr-only"
           disabled={uploading}
@@ -93,11 +153,16 @@ function ImageManager({ onChange, product }) {
           onChange={upload}
           type="file"
         />
-        <span className="flex items-center gap-2">
-          <ImagePlus size={18} />
-          {uploading ? 'Uploading…' : 'Click to select images'}
+        <span className="flex flex-col items-center gap-1">
+          <span className="flex items-center gap-2 font-medium">
+            <ImagePlus size={18} />
+            {uploading ? 'Uploading…' : 'Drag & drop, paste, or click to choose images'}
+          </span>
+          <span className="text-xs text-neutral-400">
+            Ctrl+V to paste copied image
+          </span>
         </span>
-      </label>
+      </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {(product.images ?? []).map((image) => (

@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Samsung Galaxy M35 5G",
+    "description": "5G smartphone with Super AMOLED display, powerful processor and long-lasting battery.",
+    "category": "mobiles",
+    "price": 16999,
+    "stock": 42,
+    "isActive": true
+  },
+  {
+    "title": "boAt Rockerz 450 Bluetooth Headphones",
+    "description": "Wireless over-ear headphones with immersive sound, comfortable ear cushions and long battery life.",
+    "category": "electronics",
+    "price": 1299,
+    "stock": 75,
+    "isActive": true
+  },
+  {
+    "title": "HP 15s Intel Core i5 Laptop",
+    "description": "Slim everyday laptop with Intel Core i5 processor, 16GB RAM and 512GB SSD.",
+    "category": "laptops",
+    "price": 58990,
+    "stock": 18,
+    "isActive": true
+  },
+  {
+    "title": "Nike Revolution 7 Running Shoes",
+    "description": "Lightweight running shoes with cushioned sole and breathable upper for daily workouts.",
+    "category": "footwear",
+    "price": 3495,
+    "stock": 34,
+    "isActive": true
+  },
+  {
+    "title": "Puma Men's Solid Casual T-Shirt",
+    "description": "Comfortable cotton-blend regular-fit t-shirt suitable for everyday casual wear.",
+    "category": "fashion",
+    "price": 999,
+    "stock": 120,
+    "isActive": true
+  },
+  {
+    "title": "Fastrack Analog Men's Watch",
+    "description": "Stylish analog watch with a durable strap and modern dial design for everyday use.",
+    "category": "watches",
+    "price": 1895,
+    "stock": 27,
+    "isActive": true
+  },
+  {
+    "title": "Prestige Electric Rice Cooker",
+    "description": "Compact electric rice cooker with automatic cooking and keep-warm functionality.",
+    "category": "kitchen-appliances",
+    "price": 2199,
+    "stock": 31,
+    "isActive": true
+  },
+  {
+    "title": "Philips 1000W Mixer Grinder",
+    "description": "Powerful mixer grinder with stainless steel jars for grinding, blending and everyday cooking.",
+    "category": "home-appliances",
+    "price": 3299,
+    "stock": 25,
+    "isActive": true
+  },
+  {
+    "title": "American Tourister Casual Backpack",
+    "description": "Spacious everyday backpack with laptop compartment and multiple storage pockets.",
+    "category": "bags",
+    "price": 1799,
+    "stock": 56,
+    "isActive": true
+  },
+  {
+    "title": "Wildcraft Men's Hooded Jacket",
+    "description": "Lightweight hooded jacket designed for outdoor activities and cool weather.",
+    "category": "fashion",
+    "price": 2499,
+    "stock": 19,
+    "isActive": true
+  },
+  {
+    "title": "Lakme Absolute Skin Natural Foundation",
+    "description": "Lightweight foundation with natural-looking coverage and a smooth matte finish.",
+    "category": "beauty",
+    "price": 699,
+    "stock": 88,
+    "isActive": true
+  },
+  {
+    "title": "Mamaearth Vitamin C Face Wash",
+    "description": "Gentle face wash enriched with vitamin C and turmeric for everyday cleansing.",
+    "category": "beauty",
+    "price": 399,
+    "stock": 145,
+    "isActive": true
+  },
+  {
+    "title": "Wakefit Memory Foam Pillow",
+    "description": "Ergonomically designed memory foam pillow providing comfortable support during sleep.",
+    "category": "home-furnishing",
+    "price": 899,
+    "stock": 64,
+    "isActive": true
+  },
+  {
+    "title": "Milton Thermosteel Water Bottle",
+    "description": "Stainless steel insulated bottle designed to keep beverages hot or cold for extended periods.",
+    "category": "kitchen",
+    "price": 749,
+    "stock": 93,
+    "isActive": true
+  },
+  {
+    "title": "AmazonBasics Cotton Bedsheet",
+    "description": "Soft cotton double bedsheet with attractive printed design and matching pillow covers.",
+    "category": "home-furnishing",
+    "price": 1099,
+    "stock": 47,
+    "isActive": true
+  },
+  {
+    "title": "LG 43 Inch 4K Smart LED TV",
+    "description": "4K smart television with vivid picture quality, streaming apps and immersive audio.",
+    "category": "televisions",
+    "price": 31990,
+    "stock": 12,
+    "isActive": true
+  },
+  {
+    "title": "Realme Buds Air 6",
+    "description": "True wireless earbuds with active noise cancellation, clear audio and low-latency mode.",
+    "category": "electronics",
+    "price": 3299,
+    "stock": 61,
+    "isActive": true
+  },
+  {
+    "title": "Havells 1200W Room Heater",
+    "description": "Compact room heater with adjustable temperature settings and multiple safety features.",
+    "category": "home-appliances",
+    "price": 2499,
+    "stock": 22,
+    "isActive": true
+  },
+  {
+    "title": "Adidas Unisex Sports Cap",
+    "description": "Lightweight sports cap with breathable fabric and adjustable back strap.",
+    "category": "fashion",
+    "price": 799,
+    "stock": 71,
+    "isActive": true
+  },
+  {
+    "title": "Casio Digital Men's Watch",
+    "description": "Classic digital watch featuring alarm, stopwatch, LED backlight and water resistance.",
+    "category": "watches",
+    "price": 1495,
+    "stock": 39,
+    "isActive": true
+  },
+  {
+    "title": "OnePlus Nord CE 4 Lite 5G",
+    "description": "Affordable 5G smartphone with AMOLED display, large battery and fast charging.",
+    "category": "mobiles",
+    "price": 19999,
+    "stock": 28,
+    "isActive": true
+  },
+  {
+    "title": "boAt Airdopes 141 Wireless Earbuds",
+    "description": "True wireless earbuds with punchy sound, long playback and compact charging case.",
+    "category": "electronics",
+    "price": 1199,
+    "stock": 84,
+    "isActive": true
+  },
+  {
+    "title": "Lenovo IdeaPad Slim 3",
+    "description": "Everyday laptop with responsive performance, Full HD display and fast SSD storage.",
+    "category": "laptops",
+    "price": 42990,
+    "stock": 16,
+    "isActive": true
+  },
+  {
+    "title": "Adidas Runfalcon 5 Running Shoes",
+    "description": "Comfortable running shoes with cushioned midsole and breathable mesh upper.",
+    "category": "footwear",
+    "price": 2999,
+    "stock": 37,
+    "isActive": true
+  },
+  {
+    "title": "Levi's Men's Regular Fit Jeans",
+    "description": "Classic regular-fit denim jeans designed for comfortable everyday wear.",
+    "category": "fashion",
+    "price": 2299,
+    "stock": 52,
+    "isActive": true
+  },
+  {
+    "title": "Noise ColorFit Pulse 4 Smartwatch",
+    "description": "Feature-rich smartwatch with fitness tracking, notifications and a bright display.",
+    "category": "smartwatches",
+    "price": 1499,
+    "stock": 45,
+    "isActive": true
+  },
+  {
+    "title": "Prestige 3 Litre Pressure Cooker",
+    "description": "Durable aluminium pressure cooker designed for convenient everyday Indian cooking.",
+    "category": "kitchen",
+    "price": 1799,
+    "stock": 33,
+    "isActive": true
+  },
+  {
+    "title": "Karcher Portable Vacuum Cleaner",
+    "description": "Compact handheld vacuum cleaner suitable for cleaning furniture, cars and small spaces.",
+    "category": "home-appliances",
+    "price": 2490,
+    "stock": 21,
+    "isActive": true
+  },
+  {
+    "title": "Skybags Casual Laptop Backpack",
+    "description": "Durable laptop backpack with spacious compartments and padded shoulder straps.",
+    "category": "bags",
+    "price": 1599,
+    "stock": 49,
+    "isActive": true
+  },
+  {
+    "title": "Dove Intense Repair Shampoo",
+    "description": "Nourishing shampoo formulated to help smooth and strengthen dry, damaged-looking hair.",
+    "category": "personal-care",
+    "price": 499,
+    "stock": 67,
+    "isActive": true
+  }
+]

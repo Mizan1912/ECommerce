@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { authApi } from "../../lib/api/client";
+import axios from "axios";
 import { UserPlus, User, ShieldCheck } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Field } from "../../components/ui/Field";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -40,20 +41,30 @@ const RegisterPage = () => {
     }
 
     try {
-      await authApi.register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        location: formData.location,
-      });
+      const response = await axios.post(
+        "https://hfvf76kr-5000.inc1.devtunnels.ms/api/v1/auth/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          location: formData.location,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Registration successful:", response.data);
 
       toast.success("Registration successful!");
       setTimeout(() => {
         navigate("/login");
       }, 1500);
+
     } catch (error) {
-      setError(error.message || "Couldn't create your account.");
-      toast.error(error.message || "Couldn't create your account.");
+      const errMsg = error.response?.data?.message || error.message || "Couldn't create your account.";
+      setError(errMsg);
+      toast.error(errMsg);
     }
   }; // <-- CLOSES handleRegister
 
@@ -94,7 +105,7 @@ const RegisterPage = () => {
             value={formData.email}
             onChange={handleChange}
           />
-            {error && (
+          {error && (
             <div className="flex items-center gap-2 -mt-3 text-red-500 text-sm">
               <span className="flex items-center justify-center w-4 h-4 rounded-full border-2 border-red-500 text-[10px] font-bold">
                 !
@@ -102,7 +113,7 @@ const RegisterPage = () => {
 
               <span>{error}</span>
             </div>
-            )}
+          )}
 
           <Field
             label="Password"
@@ -113,8 +124,6 @@ const RegisterPage = () => {
             onChange={handleChange}
           />
 
-          {/* Error message */}
-       
           <Field
             label="Location"
             name="location"
@@ -129,7 +138,6 @@ const RegisterPage = () => {
             <UserPlus size={18} />
             Register
           </Button>
-          {/* Test Toast */}
           
         </form>
 
