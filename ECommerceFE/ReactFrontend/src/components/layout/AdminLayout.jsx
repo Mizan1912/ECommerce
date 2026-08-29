@@ -1,5 +1,5 @@
 import { BarChart3, Boxes, ImageUp, Package, ReceiptText, Users, WalletCards } from 'lucide-react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { Button } from '../ui/Button'
 import { Notice } from '../ui/Notice'
 import { useApp } from '../../lib/appContext'
@@ -15,20 +15,7 @@ const adminNav = [
 ]
 
 export function AdminLayout() {
-  const { session, signOut } = useApp()
-  const navigate = useNavigate()
-
-  const handleSignOut = async () => {
-    await signOut()
-    navigate('/login')
-  }
-
-  const initials = (session?.name ?? 'AD')
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+  const { signOut } = useApp()
 
   return (
     <div className="min-h-screen bg-neutral-100 text-neutral-950">
@@ -63,17 +50,8 @@ export function AdminLayout() {
           </nav>
         </aside>
         <div>
-          <header className="flex h-16 items-center justify-end gap-4 border-b border-neutral-200 bg-white px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
-              <span className="grid size-9 place-items-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-800">
-                {initials}
-              </span>
-              <span className="hidden text-sm leading-tight sm:block">
-                <span className="block font-medium">{session?.name}</span>
-                <span className="block text-xs text-neutral-500">{session?.email}</span>
-              </span>
-            </div>
-            <Button onClick={handleSignOut} variant="secondary">
+          <header className="flex h-16 items-center justify-end border-b border-neutral-200 bg-white px-4 sm:px-6 lg:px-8">
+            <Button onClick={signOut} variant="secondary">
               Sign out
             </Button>
           </header>

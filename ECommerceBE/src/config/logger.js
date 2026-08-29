@@ -1,8 +1,4 @@
 import pino from "pino";
-import fs from "fs";
-
-// pino/file does not create the directory, so make sure it exists on boot.
-fs.mkdirSync("./logs", { recursive: true });
 
 const transport = pino.transport({
   targets: [

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppProvider } from './lib/AppProvider'
 import { useApp } from './lib/appContext'
 import { AdminLayout } from './components/layout/AdminLayout'
@@ -6,7 +6,6 @@ import { StoreLayout } from './components/layout/StoreLayout'
 import { AccountPage } from './features/account/AccountPage'
 import { AdminDashboardPage } from './features/admin/AdminDashboardPage'
 import { AdminInventoryPage } from './features/admin/AdminInventoryPage'
-import { AdminOrderDetailPage } from './features/admin/AdminOrderDetailPage'
 import { AdminOrdersPage } from './features/admin/AdminOrdersPage'
 import { AdminPaymentsPage } from './features/admin/AdminPaymentsPage'
 import { AdminProductEditorPage } from './features/admin/AdminProductEditorPage'
@@ -27,14 +26,11 @@ import './App.css'
 import  RegisterPage  from './features/auth/Register'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 function AdminGate({ children }) {
   const { session } = useApp()
-  const location = useLocation()
 
-  // Preview sessions carry no access token, so they cannot reach the admin API.
-  if (session?.role !== 'admin' || session?.isPreview) {
-    return <Navigate replace to={`/login?next=${encodeURIComponent(location.pathname)}`} />
+  if (session?.role !== 'admin') {
+    return <Navigate replace to="/login?next=/admin" />
   }
 
   return children
@@ -72,7 +68,6 @@ function AppRoutes() {
         <Route path="products/:id/edit" element={<AdminProductEditorPage mode="edit" />} />
         <Route path="inventory" element={<AdminInventoryPage />} />
         <Route path="orders" element={<AdminOrdersPage />} />
-        <Route path="orders/:id" element={<AdminOrderDetailPage />} />
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="uploads" element={<AdminUploadsPage />} />
         <Route path="payments" element={<AdminPaymentsPage />} />

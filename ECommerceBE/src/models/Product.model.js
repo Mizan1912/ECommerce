@@ -41,10 +41,6 @@ const productSchema = mongoose.Schema({
      images:[{
           url:String,
           publicId:String,
-          isPrimary:{
-               type:Boolean,
-               default:false,
-          },
      },]
 },{timestamps:true});
 

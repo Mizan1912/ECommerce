@@ -52,12 +52,6 @@ export const loginUser = async(payload)=>{
         );   
     }
 
-    if(user.isActive === false){
-        throw new ApiError(403,
-            "Your account has been deactivated. Contact support."
-        )
-    }
-
     const isPasswordCorrect=await bcrypt.compare(password,user.password);
 
     if(!isPasswordCorrect){
