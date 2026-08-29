@@ -40,7 +40,7 @@ export function LoginPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/auth/login",
+        "https://ecommerce-i02q.onrender.com/api/v1/auth/login",
         // "https://hfvf76kr-5000.inc1.devtunnels.ms/api/v1/auth/login",
         requestBody
       )

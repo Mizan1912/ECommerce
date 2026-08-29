@@ -37,6 +37,7 @@
     "seed:admin": "node src/scripts/seedAdmin.js",
     "seed:demo": "node src/scripts/seedDemoData.js",
     "seed:json": "node src/scripts/seedFromJson.js",
+    "db:migrate": "node src/scripts/migrateDb.js",
     "dev": "nodemon index.js"
   },
   "keywords": [],

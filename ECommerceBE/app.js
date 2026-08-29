@@ -33,34 +33,10 @@ app.use(
   })
 );
 
-const allowedOrigins = env.CLIENT_URL
-  ? env.CLIENT_URL.split(',').map(url => url.trim().replace(/\/$/, ''))
-  : [];
-
 app.use(cors({
   origin: (origin, callback) => {
-    // In development or test, allow all origins
-    if (env.NODE_ENV === 'development' || env.NODE_ENV === 'test') {
-      return callback(null, true);
-    }
-    
-    // Allow requests with no origin (like mobile apps, postman, curl)
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    const cleanOrigin = origin.replace(/\/$/, '');
-    const isAllowed = 
-      allowedOrigins.includes(cleanOrigin) || 
-      cleanOrigin.includes('devtunnels.ms') ||
-      cleanOrigin.startsWith('http://localhost:') || 
-      cleanOrigin.startsWith('http://127.0.0.1:');
-
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Temporarily allow all origins dynamically (essential for credentials support)
+    callback(null, true);
   },
   credentials: true
 }));
