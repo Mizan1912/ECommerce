@@ -50,11 +50,12 @@ app.use(cors({
     }
 
     const cleanOrigin = origin.replace(/\/$/, '');
+    const localIpRegex = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/;
+    
     const isAllowed = 
       allowedOrigins.includes(cleanOrigin) || 
       cleanOrigin.includes('devtunnels.ms') ||
-      cleanOrigin.startsWith('http://localhost:') || 
-      cleanOrigin.startsWith('http://127.0.0.1:');
+      localIpRegex.test(cleanOrigin);
 
     if (isAllowed) {
       callback(null, true);
